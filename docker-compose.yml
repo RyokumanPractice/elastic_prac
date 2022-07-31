@@ -1,0 +1,34 @@
+version: "3"
+
+volumes:
+  elastic_search:
+
+services:
+  backend:
+    container_name: backend
+    build: ./backend
+    command: >
+      bash -c "python manage.py makemigrations &&
+               python manage.py migrate &&
+               python manage.py runserver 0.0.0.0:8080"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/backend
+    expose:
+      - 8080
+  elasticsearch:
+    container_name: elastic_search
+    build:
+      context: ./elastic_search
+      args:
+        ELK_VERSION: 7.16.3
+    restart: always
+    volumes:
+      - ./elastic_search/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,z
+      - elastic_search:/usr/share/elasticsearch/data:z
+    ports:
+      - "9200:9200"
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      discovery.type: single-node
