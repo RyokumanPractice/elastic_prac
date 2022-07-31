@@ -18,7 +18,7 @@ def test_get(request):
     return_result = []
     num = 1
     for hit in search_result:
-        return_result.append(str({'number': num, 'name': hit.name, 'desc': type(hit.desc)}))
+        return_result.append(dict({'number': num, 'name': hit.name, 'desc': hit.desc}))
     return JsonResponse({'result': return_result}, status=200)
 
 
